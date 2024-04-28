@@ -25,24 +25,24 @@ size_t last_size;
 std::string exception_name;
 
 std::string demangle(const char *name) {
-  int status;
-  std::unique_ptr<char, void (*)(void *)> realname(
-      abi::__cxa_demangle(name, 0, 0, &status), &std::free);
-  return status ? "failed" : &*realname;
+    int status;
+    std::unique_ptr<char, void (*)(void *)> realname(
+        abi::__cxa_demangle(name, 0, 0, &status), &std::free);
+    return status ? "failed" : &*realname;
 }
 }  // namespace
 
 /* Mess around with C++'s exception throwing to display backtraces */
 extern "C" {
 void __cxa_throw(void *ex, void *info, void (*dest)(void *)) {
-  exception_name =
-      demangle(reinterpret_cast<const std::type_info *>(info)->name());
-  last_size = backtrace(last_frames, sizeof last_frames / sizeof(void *));
+    exception_name =
+        demangle(reinterpret_cast<const std::type_info *>(info)->name());
+    last_size = backtrace(last_frames, sizeof last_frames / sizeof(void *));
 
-  static void (*const rethrow)(void *, void *, void (*)(void *))
-      __attribute__((noreturn)) = (void (*)(
-          void *, void *, void (*)(void *)))dlsym(RTLD_NEXT, "__cxa_throw");
-  rethrow(ex, info, dest);
+    static void (*const rethrow)(void *, void *, void (*)(void *))
+        __attribute__((noreturn)) = (void (*)(
+            void *, void *, void (*)(void *)))dlsym(RTLD_NEXT, "__cxa_throw");
+    rethrow(ex, info, dest);
 }
 }
 
@@ -83,99 +83,99 @@ static struct argp_option options[] = {
     {0, 0, 0, 0, 0, 0}};
 
 struct args {
-  char *input;
-  std::string output_dir{getcwd(NULL, 0)};
-  unsigned int max_epochs = 1000000, max_samples = 1000000,
-               max_epoch_samples = 10000, num_rounds = 50;
-  enum algorithm algorithm = ALGO_UNSET;
-  int strategy = STRAT_SMTBIT;
-  bool json = false, no_write = false, debug = false, one_epoch = false,
-       exhaust_epoch = false, save_interval_size = false, avoid_maxsmt = false;
-  double max_time = 3600.0, max_epoch_time = 600.0, min_rate = 0.95;
+    char *input;
+    std::string output_dir{getcwd(NULL, 0)};
+    unsigned int max_epochs = 1000000, max_samples = 1000000,
+                 max_epoch_samples = 10000, num_rounds = 50;
+    enum algorithm algorithm = ALGO_UNSET;
+    int strategy = STRAT_SMTBIT;
+    bool json = false, no_write = false, debug = false, one_epoch = false,
+         exhaust_epoch = false, save_interval_size = false, avoid_maxsmt = false;
+    double max_time = 3600.0, max_epoch_time = 600.0, min_rate = 0.95;
 };
 
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
-  struct args *args = (struct args *)state->input;
+    struct args *args = (struct args *)state->input;
 
-  switch (key) {
-    case 'a':
-      if (0 == strncasecmp("mega", arg, 5))
-        args->algorithm = ALGO_MEGA;
-      else if (0 == strncasecmp("megab", arg, 6))
-        args->algorithm = ALGO_MEGAB;
-      else if (0 == strncasecmp("smt", arg, 4))
-        args->algorithm = ALGO_SMT;
-      else if (0 == strncasecmp("z3", arg, 3))
-        args->algorithm = ALGO_Z3;
-      break;
-    case '1':
-      args->one_epoch = true;
-      break;
-    case 'd':
-      args->debug = true;
-      break;
-    case 'x':
-      args->exhaust_epoch = true;
-      break;
-    case 'i':
-      args->save_interval_size = true;
-      break;
-    case 'm':
-      args->avoid_maxsmt = true;
-      break;
-    case 'n':
-      args->max_samples = atoi(arg);
-      break;
-    case 't':
-      args->max_time = atof(arg);
-      break;
-    case 'e':
-      args->max_epochs = atoi(arg);
-      break;
-    case 'r':
-      args->max_epoch_time = atof(arg);
-      break;
-    case 'y':
-      args->max_epoch_samples = atoi(arg);
-      break;
-    case 's':
-      if (0 == strncasecmp("sat", arg, 4)) {
-        args->strategy = STRAT_SAT;
-      } else if (0 == strncasecmp("smtbit", arg, 7)) {
-        args->strategy = STRAT_SMTBIT;
-      } else if (0 == strncasecmp("smtbv", arg, 6)) {
-        args->strategy = STRAT_SMTBV;
-      } else {
-        argp_usage(state);
-      }
-      break;
-    case 'j':
-      args->json = true;
-      break;
-    case 'J':
-      args->no_write = true;
-      break;
-    case 'o':
-      args->output_dir = arg;
-      break;
-    case 'R':
-      args->min_rate = atof(arg);
-      break;
-    case 'S':
-      args->num_rounds = atoi(arg);
-      break;
-    case ARGP_KEY_END:
-      if (state->arg_num < 1) argp_usage(state);
-      break;
-    case ARGP_KEY_ARG:
-      if (state->arg_num >= 1) argp_usage(state);
+    switch (key) {
+        case 'a':
+            if (0 == strncasecmp("mega", arg, 5))  // 随机式 MeGaSampler
+                args->algorithm = ALGO_MEGA;
+            else if (0 == strncasecmp("megab", arg, 6))  // 阻塞式 MeGaSampler
+                args->algorithm = ALGO_MEGAB;
+            else if (0 == strncasecmp("smt", arg, 4))  // SMTSampler_int
+                args->algorithm = ALGO_SMT;
+            else if (0 == strncasecmp("z3", arg, 3))  // 暴力算法
+                args->algorithm = ALGO_Z3;
+            break;
+        case '1':
+            args->one_epoch = true;
+            break;
+        case 'd':
+            args->debug = true;
+            break;
+        case 'x':
+            args->exhaust_epoch = true;
+            break;
+        case 'i':
+            args->save_interval_size = true;
+            break;
+        case 'm':
+            args->avoid_maxsmt = true;
+            break;
+        case 'n':
+            args->max_samples = atoi(arg);
+            break;
+        case 't':
+            args->max_time = atof(arg);
+            break;
+        case 'e':
+            args->max_epochs = atoi(arg);
+            break;
+        case 'r':
+            args->max_epoch_time = atof(arg);
+            break;
+        case 'y':
+            args->max_epoch_samples = atoi(arg);
+            break;
+        case 's':
+            if (0 == strncasecmp("sat", arg, 4)) {
+                args->strategy = STRAT_SAT;
+            } else if (0 == strncasecmp("smtbit", arg, 7)) {
+                args->strategy = STRAT_SMTBIT;
+            } else if (0 == strncasecmp("smtbv", arg, 6)) {
+                args->strategy = STRAT_SMTBV;
+            } else {
+                argp_usage(state);
+            }
+            break;
+        case 'j':
+            args->json = true;
+            break;
+        case 'J':
+            args->no_write = true;
+            break;
+        case 'o':
+            args->output_dir = arg;
+            break;
+        case 'R':
+            args->min_rate = atof(arg);
+            break;
+        case 'S':
+            args->num_rounds = atoi(arg);
+            break;
+        case ARGP_KEY_END:
+            if (state->arg_num < 1) argp_usage(state);
+            break;
+        case ARGP_KEY_ARG:
+            if (state->arg_num >= 1) argp_usage(state);
 
-      args->input = arg;
-      break;
-    default:
-      return ARGP_ERR_UNKNOWN;
-  }
-  return 0;
+            args->input = arg;
+            break;
+        default:
+            return ARGP_ERR_UNKNOWN;
+    }
+    return 0;
 }
 
 namespace {
@@ -185,138 +185,138 @@ static volatile Sampler *volatile global_samplers[4] = {
 }
 
 void signal_handler(__attribute__((unused)) int sig) {
-  // External timeout
-  if (NULL == global_samplers[0]) std::abort();
-  for (unsigned long i = 0;
-       i < sizeof(global_samplers) / sizeof(*global_samplers); ++i) {
-    global_samplers[i]->set_exit();
-  }
+    // External timeout
+    if (NULL == global_samplers[0]) std::abort();
+    for (unsigned long i = 0;
+         i < sizeof(global_samplers) / sizeof(*global_samplers); ++i) {
+        global_samplers[i]->set_exit();
+    }
 }
 
 SamplerConfig configFromArgs(const struct args &args, bool blocking) {
-  return SamplerConfig(blocking, args.one_epoch, args.debug, args.exhaust_epoch,
-                       args.save_interval_size, args.avoid_maxsmt,
-                       args.max_samples, args.max_epoch_samples, args.max_time,
-                       args.max_epoch_time, args.strategy, args.json,
-                       args.no_write, args.min_rate, args.num_rounds);
+    return SamplerConfig(blocking, args.one_epoch, args.debug, args.exhaust_epoch,
+                         args.save_interval_size, args.avoid_maxsmt,
+                         args.max_samples, args.max_epoch_samples, args.max_time,
+                         args.max_epoch_time, args.strategy, args.json,
+                         args.no_write, args.min_rate, args.num_rounds);
 }
 
 int regular_run(z3::context &c, const struct args &args) {
-  std::unique_ptr<Sampler> s;
+    std::unique_ptr<Sampler> s;
 
-  switch (args.algorithm) {
-    case MeGA::ALGO_UNSET:
-      std::cout << "Please select an algorithm\n";
-      exit(1);
-      break;
-    case MeGA::ALGO_MEGA:
-      s = std::make_unique<MEGASampler>(&c, args.input, args.output_dir,
-                                        configFromArgs(args, false));
-      break;
-    case MeGA::ALGO_MEGAB:
-      s = std::make_unique<MEGASampler>(&c, args.input, args.output_dir,
-                                        configFromArgs(args, true));
-      break;
-    case MeGA::ALGO_SMT:
-      s = std::make_unique<SMTSampler>(&c, args.input, args.output_dir,
-                                       configFromArgs(args, false));
-      break;
-    case MeGA::ALGO_Z3:
-      s = std::make_unique<MiniSampler>(&c, args.input, args.output_dir,
-                                        configFromArgs(args, false));
-      break;
-  }
-  if (args.debug) s->debug = true;
-
-  global_samplers[0] = s.get();
-  s->set_timer_max("total", args.max_time);
-  s->set_timer_max("epoch", args.max_epoch_time);
-  s->set_timer_on("total");
-  s->set_timer_on("initial_solving");
-  s->check_if_satisfiable();  // todo: save model from initial solving?
-  s->accumulate_time("initial_solving");
-  try {
-    for (size_t epochs = 0; epochs < args.max_epochs; epochs++) {
-      s->set_timer_on("epoch");
-      s->set_timer_on("start_epoch");
-      z3::model m = s->start_epoch();
-      s->accumulate_time("start_epoch");
-      s->set_timer_on("do_epoch");
-      s->do_epoch(m);
-      s->accumulate_time("do_epoch");
-      s->accumulate_time("epoch");
+    switch (args.algorithm) {
+        case MeGA::ALGO_UNSET:
+            std::cout << "Please select an algorithm\n";
+            exit(1);
+            break;
+        case MeGA::ALGO_MEGA:
+            s = std::make_unique<MEGASampler>(&c, args.input, args.output_dir,
+                                              configFromArgs(args, false));
+            break;
+        case MeGA::ALGO_MEGAB:
+            s = std::make_unique<MEGASampler>(&c, args.input, args.output_dir,
+                                              configFromArgs(args, true));
+            break;
+        case MeGA::ALGO_SMT:
+            s = std::make_unique<SMTSampler>(&c, args.input, args.output_dir,
+                                             configFromArgs(args, false));
+            break;
+        case MeGA::ALGO_Z3:
+            s = std::make_unique<MiniSampler>(&c, args.input, args.output_dir,
+                                              configFromArgs(args, false));
+            break;
     }
-  } catch (const z3::exception &except) {
-    std::cout << "Termination due to: " << except << "\n";
-    /* if we caught an exception, display some backtrace */
-    backtrace_symbols_fd(last_frames, last_size, 2);
-  }
-  s->accumulate_time("total");
-  s->safe_exit(0);
-  return 0;
+    if (args.debug) s->debug = true;
+
+    global_samplers[0] = s.get();
+    s->set_timer_max("total", args.max_time);
+    s->set_timer_max("epoch", args.max_epoch_time);
+    s->set_timer_on("total");
+    s->set_timer_on("initial_solving");
+    s->check_if_satisfiable();  // todo: save model from initial solving?
+    s->accumulate_time("initial_solving");
+    try {
+        for (size_t epochs = 0; epochs < args.max_epochs; epochs++) {
+            s->set_timer_on("epoch");
+            s->set_timer_on("start_epoch");
+            z3::model m = s->start_epoch();
+            s->accumulate_time("start_epoch");
+            s->set_timer_on("do_epoch");
+            s->do_epoch(m);
+            s->accumulate_time("do_epoch");
+            s->accumulate_time("epoch");
+        }
+    } catch (const z3::exception &except) {
+        std::cout << "Termination due to: " << except << "\n";
+        /* if we caught an exception, display some backtrace */
+        backtrace_symbols_fd(last_frames, last_size, 2);
+    }
+    s->accumulate_time("total");
+    s->safe_exit(0);
+    return 0;
 }
 
 int one_epoch_run(z3::context &c, const struct args &args) {
-  std::unique_ptr<Sampler> samplers[] = {
-      std::make_unique<MEGASampler>(&c, args.input, args.output_dir + "/MeGA",
-                                    configFromArgs(args, false)),
-      std::make_unique<MEGASampler>(&c, args.input, args.output_dir + "/MeGAb",
-                                    configFromArgs(args, true)),
-      std::make_unique<SMTSampler>(&c, args.input, args.output_dir + "/SMT",
-                                   configFromArgs(args, false)),
-      std::make_unique<MiniSampler>(&c, args.input, args.output_dir + "/Z3",
-                                    configFromArgs(args, false))};
+    std::unique_ptr<Sampler> samplers[] = {
+        std::make_unique<MEGASampler>(&c, args.input, args.output_dir + "/MeGA",
+                                      configFromArgs(args, false)),
+        std::make_unique<MEGASampler>(&c, args.input, args.output_dir + "/MeGAb",
+                                      configFromArgs(args, true)),
+        std::make_unique<SMTSampler>(&c, args.input, args.output_dir + "/SMT",
+                                     configFromArgs(args, false)),
+        std::make_unique<MiniSampler>(&c, args.input, args.output_dir + "/Z3",
+                                      configFromArgs(args, false))};
 
-  for (unsigned int i = 0; i < sizeof(samplers) / sizeof(*samplers); ++i) {
-    global_samplers[i] = samplers[i].get();
-    if (args.debug) samplers[i]->debug = true;
-    samplers[i]->set_timer_max("total", args.max_time);
-    samplers[i]->set_timer_max("epoch", args.max_epoch_time);
-    samplers[i]->set_timer_on("total");
-    samplers[i]->set_timer_on("initial_solving");
-  }
-
-  samplers[0]->check_if_satisfiable();
-
-  for (unsigned int i = 0; i < sizeof(samplers) / sizeof(*samplers); ++i) {
-    samplers[i]->accumulate_time("initial_solving");
-    samplers[i]->set_timer_on("epoch");
-    samplers[i]->set_timer_on("start_epoch");
-  }
-
-  z3::model m = samplers[0]->start_epoch();
-  for (unsigned int i = 1; i < sizeof(samplers) / sizeof(*samplers); ++i) {
-    samplers[i]->set_epochs(1);
-  }
-
-  for (unsigned int i = 0; i < sizeof(samplers) / sizeof(*samplers); ++i) {
-    samplers[i]->accumulate_time("start_epoch");
-    samplers[i]->accumulate_time("epoch");
-    samplers[i]->accumulate_time("total");
-  }
-
-  for (unsigned int i = 0; i < sizeof(samplers) / sizeof(*samplers); ++i) {
-    /* make sure to output the solution from start_epoch */
-    samplers[i]->save_and_output_sample_if_unique(
-        samplers[i]->model_to_string(m));
-
-    samplers[i]->set_timer_on("total");
-    samplers[i]->set_timer_on("epoch");
-    samplers[i]->set_timer_on("do_epoch");
-    samplers[i]->set_model(m);
-    try {
-      samplers[i]->do_epoch(m);
-    } catch (const z3::exception &e) {
-      std::cout << "Failed in Sampler " << i << " due to: " << e << "\n";
+    for (unsigned int i = 0; i < sizeof(samplers) / sizeof(*samplers); ++i) {
+        global_samplers[i] = samplers[i].get();
+        if (args.debug) samplers[i]->debug = true;
+        samplers[i]->set_timer_max("total", args.max_time);
+        samplers[i]->set_timer_max("epoch", args.max_epoch_time);
+        samplers[i]->set_timer_on("total");
+        samplers[i]->set_timer_on("initial_solving");
     }
-    samplers[i]->accumulate_time("do_epoch");
-    samplers[i]->accumulate_time("epoch");
-    samplers[i]->accumulate_time("total");
 
-    samplers[i]->finish();  // All done :)
-  }
+    samplers[0]->check_if_satisfiable();
 
-  return 0;
+    for (unsigned int i = 0; i < sizeof(samplers) / sizeof(*samplers); ++i) {
+        samplers[i]->accumulate_time("initial_solving");
+        samplers[i]->set_timer_on("epoch");
+        samplers[i]->set_timer_on("start_epoch");
+    }
+
+    z3::model m = samplers[0]->start_epoch();
+    for (unsigned int i = 1; i < sizeof(samplers) / sizeof(*samplers); ++i) {
+        samplers[i]->set_epochs(1);
+    }
+
+    for (unsigned int i = 0; i < sizeof(samplers) / sizeof(*samplers); ++i) {
+        samplers[i]->accumulate_time("start_epoch");
+        samplers[i]->accumulate_time("epoch");
+        samplers[i]->accumulate_time("total");
+    }
+
+    for (unsigned int i = 0; i < sizeof(samplers) / sizeof(*samplers); ++i) {
+        /* make sure to output the solution from start_epoch */
+        samplers[i]->save_and_output_sample_if_unique(
+            samplers[i]->model_to_string(m));
+
+        samplers[i]->set_timer_on("total");
+        samplers[i]->set_timer_on("epoch");
+        samplers[i]->set_timer_on("do_epoch");
+        samplers[i]->set_model(m);
+        try {
+            samplers[i]->do_epoch(m);
+        } catch (const z3::exception &e) {
+            std::cout << "Failed in Sampler " << i << " due to: " << e << "\n";
+        }
+        samplers[i]->accumulate_time("do_epoch");
+        samplers[i]->accumulate_time("epoch");
+        samplers[i]->accumulate_time("total");
+
+        samplers[i]->finish();  // All done :)
+    }
+
+    return 0;
 }
 }  // namespace MeGA
 
@@ -329,22 +329,22 @@ static struct argp argp = {MeGA::options,
                            0};
 
 int main(int argc, char *argv[]) {
-  std::signal(SIGHUP, MeGA::signal_handler);
-  struct MeGA::args args;
-  argp_parse(&argp, argc, argv, 0, 0, &args);
+    std::signal(SIGHUP, MeGA::signal_handler);
+    struct MeGA::args args;
+    argp_parse(&argp, argc, argv, 0, 0, &args);
 
-  if (args.strategy == MeGA::STRAT_SAT) {
-    std::cout << "Conversion to SAT is temporarily not supported\n";
-    return 1;
-  }
+    if (args.strategy == MeGA::STRAT_SAT) {
+        std::cout << "Conversion to SAT is temporarily not supported\n";
+        return 1;
+    }
 
-  if (args.one_epoch && args.algorithm != MeGA::ALGO_UNSET) {
-    std::cout << "Can't choose an algorithm in one-epoch mode.";
-    return 1;
-  }
+    if (args.one_epoch && args.algorithm != MeGA::ALGO_UNSET) {
+        std::cout << "Can't choose an algorithm in one-epoch mode.";
+        return 1;
+    }
 
-  z3::context c;
-
-  if (!args.one_epoch) return regular_run(c, args);
-  return one_epoch_run(c, args);
+    z3::context c;
+    std::cout << "111" << std::endl;
+    if (!args.one_epoch) return regular_run(c, args);
+    return one_epoch_run(c, args);
 }

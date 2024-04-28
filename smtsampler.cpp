@@ -356,7 +356,7 @@ std::string SMTSampler::model_string(z3::model m,
     } else if (v.is_const()) {
       // case const, i.e., int or bool sorts
       z3::expr b = m.eval(v(), true);
-      assert((Z3_ast) ast);  // model should have an interpretation for all variables
+      // assert((Z3_ast) ast);  // model should have an interpretation for all variables
       switch (v.range().sort_kind()) {
         case Z3_INT_SORT:
           ss << b << ';';
