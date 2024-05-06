@@ -14,7 +14,8 @@ CXXFLAGS=-Wall -Wextra -Wnon-virtual-dtor -pedantic -ggdb \
   -std=gnu++17 -march=native -pipe -O3 -flto -DNDEBUG
 Z3DIR=../z3
 Z3FLAGS=-isystem $(Z3DIR)/src/api -isystem ../z3/src/api/c++
-Z3LINKFLAGS=-L ../z3/build -lz3
+# my change
+Z3LINKFLAGS=-L ../z3/build  -Wl,-rpath,../z3/build -lz3
 LDFLAGS=$(Z3LINKFLAGS) -ldl -rdynamic -ljsoncpp -lpthread
 
 clean:

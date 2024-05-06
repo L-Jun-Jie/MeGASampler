@@ -344,7 +344,6 @@ int main(int argc, char *argv[]) {
     }
 
     z3::context c;
-    std::cout << "111" << std::endl;
     if (!args.one_epoch) return regular_run(c, args);
     return one_epoch_run(c, args);
 }

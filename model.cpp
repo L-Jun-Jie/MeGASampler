@@ -22,6 +22,10 @@ static inline int64_t safe_mul(int64_t a, int64_t b) {
   return ((a > 0) ^ (b > 0)) ? INT64_MIN : INT64_MAX;
 }
 
+/** 
+ * returns a uniform, unbiased random value 
+ * in the interval [INT64_MIN,INT64_MAX]. 
+ * */
 static inline int64_t draw_random_int() {
   std::mt19937 rng(std::random_device{}());
   std::uniform_int_distribution<int64_t> gen(INT64_MIN,
@@ -53,7 +57,7 @@ std::string Model::toString() {
   res.reserve(10 + variable_map.size() * 10 + array_map.size() * 25);
   for (const auto& name : var_names) {
     const auto var_value = variable_map.find(name);
-    if (var_value != variable_map.end()) {
+    if (var_value != variable_map.end()) { // format "var: var;"
       res += var_value->first;
       res += ':';
       res += std::to_string(var_value->second);
@@ -61,7 +65,7 @@ std::string Model::toString() {
       continue;
     }
     const auto array_value = array_map.find(name);
-    if (array_value != array_map.end()) {
+    if (array_value != array_map.end()) { // format "arr_name:[arr_size,0,idx1->val1,idx2->val2,...];"
       res += array_value->first;
       res += ":[";
       auto& idx_val_map = array_value->second;
@@ -86,6 +90,11 @@ std::string Model::toString() {
   return res;
 }
 
+/**
+ * \brief Getting the value of a variable in a model
+ * If the variable is assigned a value in the model, 
+ * return (val,true); otherwise return (-1,false)
+*/
 std::pair<int64_t, bool> Model::evalIntVar(const std::string& var) {
   auto it = variable_map.find(var);
   if (it == variable_map.end()) {
@@ -95,6 +104,11 @@ std::pair<int64_t, bool> Model::evalIntVar(const std::string& var) {
   }
 }
 
+/**
+ * Returns (val,true) if the array element arr[idx] 
+ * is assigned a value in the model; 
+ * otherwise returns (-1,false)
+*/
 std::pair<int64_t, bool> Model::evalArrayVar(const std::string& array,
                                              int64_t index) {
   auto it = array_map.find(array);

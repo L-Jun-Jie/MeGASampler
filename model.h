@@ -28,7 +28,11 @@ class Model {
   // previously assigned).
   bool addArrayAssignment(const std::string& array, int64_t index,
                           int64_t value);
+  /**
+   * Return the model as a string
+   * */
   std::string toString();
+
   /*
    * If var is assigned in the current model - returns its value in the model
    * and true. Else - returns -1 and false.

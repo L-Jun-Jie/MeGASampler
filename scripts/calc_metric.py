@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/home/mok/work_space/MeGASampler_Z3/venv/bin python3
 from __future__ import annotations
 import abc
 import argparse

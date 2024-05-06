@@ -1,0 +1,38 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C++ Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/megasampler",
+            "args": [
+                "-n",
+                "1000",
+                "-a",
+                "MeGa",
+                "-t",
+                "360",
+                "16_bench/LIA_prime-cone_sat_17.smt2"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                "name": "LD_LIBRARY_PATH",
+                "value": "${workspaceFolder}/../venv/lib:${env:LD_LIBRARY_PATH}"
+                }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build"  // 引用tasks.json中的构建任务
+        },
+    ],
+}
