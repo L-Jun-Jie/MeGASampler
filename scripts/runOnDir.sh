@@ -10,11 +10,11 @@ EXTERNAL_TIMEOUT="31m"
 # Send SIGKILL this much time after SIGHUP was sent
 KILL_AFTER="6m"
 
-JOBS="50%"
+JOBS="90%"
 
-MODE_NAMES=( "MeGA" "MeGAb" "SMT" "Z3" )
-MODE_OPTIONS=( "-a mega" "-a megab" "-a smt" "-a z3" )
-GLOBAL_OPTIONS="--json"
+MODE_NAMES=( "MeGA" "MeGAb" )
+MODE_OPTIONS=( "-a mega" "-a megab" )
+GLOBAL_OPTIONS="-n 100 -t 100"
 
 # CODE
 
@@ -57,7 +57,7 @@ function handle_sample_files() {
         # wait for megasampler to finish
         sleep 5
     done
-    sem -j${JOBS} --id "$0" -- python ${original_dir}/calc_dir_metrics.py \
+    sem -j${JOBS} --id "$0" -- python3 ${original_dir}/calc_dir_metrics.py \
         -i ${f} -f ${input_dir} ${MODE_NAMES[@]/#/-s ${newdir}\//} -d
 }
 

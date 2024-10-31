@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/home/mok/work_space/MeGASampler_Z3/MeGASampler/your_scripts/calc_metric.py", line 570, in <module>
+    main()
+  File "/home/mok/work_space/MeGASampler_Z3/MeGASampler/your_scripts/calc_metric.py", line 558, in main
+    calc_metric(
+  File "/home/mok/work_space/MeGASampler_Z3/MeGASampler/your_scripts/calc_metric.py", line 550, in calc_metric
+    _apply_metric(metric, samples, limit, print_first)
+  File "/home/mok/work_space/MeGASampler_Z3/MeGASampler/your_scripts/calc_metric.py", line 506, in _apply_metric
+    for sample in samples:
+  File "/home/mok/work_space/MeGASampler_Z3/MeGASampler/your_scripts/calc_metric.py", line 531, in parse_samples
+    yield [to_tuple(x) for x in p]
+  File "/home/mok/work_space/MeGASampler_Z3/MeGASampler/your_scripts/calc_metric.py", line 531, in <listcomp>
+    yield [to_tuple(x) for x in p]
+  File "/home/mok/work_space/MeGASampler_Z3/MeGASampler/your_scripts/calc_metric.py", line 526, in to_tuple
+    var, value = sample.split(":")
+ValueError: not enough values to unpack (expected 2, got 1)
+运行 Python 脚本时出错：your_scripts/calc_metric.py
